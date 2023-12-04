@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather App</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Weather App</h1>
+    <input type="text" id="cityInput" placeholder="Enter city">
+    <button onclick="getWeather()">Get Weather</button>
+    <div id="weatherInfo"></div>
+
+    <script>
+        function getWeather() {
+            var city = document.getElementById('cityInput').value;
+            if (city.trim() === '') {
+                alert('Please enter a city');
+                return;
+            }
+
+            $.ajax({
+                url: '/weather?city=' + city,
+                method: 'GET',
+                success: function(response) {
+                    displayWeather(response);
+                },
+                error: function(xhr, status, error) {
+                    alert('Failed to fetch weather data');
+                    console.error(error);
+                }
+            });
+        }
+
+        function displayWeather(weatherData) {
+            var weatherInfo = document.getElementById('weatherInfo');
+            weatherInfo.innerHTML = '';
+
+            var cityName = document.createElement('h2');
+            cityName.textContent = weatherData.name;
+            weatherInfo.appendChild(cityName);
+
+            var weatherDesc = document.createElement('p');
+            weatherDesc.textContent = 'Weather: ' + weatherData.weather[0].description;
+            weatherInfo.appendChild(weatherDesc);
+
+            var temp = document.createElement('p');
+            temp.textContent = 'Temperature: ' + weatherData.main.temp + '°C';
+            weatherInfo.appendChild(temp);
+
+            var humidity = document.createElement('p');
+            humidity.textContent = 'Humidity: ' + weatherData.main.humidity + '%';
+            weatherInfo.appendChild(humidity);
+        }
+    </script>
+</body>
+</html>
