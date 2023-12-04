@@ -1,0 +1,4 @@
+[
+  "tests/test_weather.py::TestWeatherAPI::test_get_weather_failure",
+  "tests/test_weather.py::TestWeatherAPI::test_get_weather_success"
+]
