@@ -3,55 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <title>Weather App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
-<body>
-    <h1>Weather App</h1>
-    <input type="text" id="cityInput" placeholder="Enter city">
-    <button onclick="getWeather()">Get Weather</button>
-    <div id="weatherInfo"></div>
+    <body>
+        <div class="container">
+            <h1>Weather App</h1>
+            <div class="input-section">
+                <input type="text" id="cityInput" placeholder="Enter city">
+                <button onclick="getWeather()">Get Weather</button>
+            </div>
+            <div id="weatherInfo" class="weather-info"></div>
+        </div>
 
-    <script>
-        function getWeather() {
-            var city = document.getElementById('cityInput').value;
-            if (city.trim() === '') {
-                alert('Please enter a city');
-                return;
+        <script>
+            function getWeather() {
+                var city = document.getElementById('cityInput').value;
+                if (city.trim() === '') {
+                    alert('Please enter a city');
+                    return;
+                }
+
+                $.ajax({
+                    url: '/weather?city=' + city,
+                    method: 'GET',
+                    success: function(response) {
+                        displayWeather(response);
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Not a valid city , try again!');
+                        console.error(error);
+                    }
+                });
             }
 
-            $.ajax({
-                url: '/weather?city=' + city,
-                method: 'GET',
-                success: function(response) {
-                    displayWeather(response);
-                },
-                error: function(xhr, status, error) {
-                    alert('Failed to fetch weather data');
-                    console.error(error);
-                }
-            });
-        }
+            function displayWeather(weatherData) {
+                var weatherInfo = document.getElementById('weatherInfo');
+                weatherInfo.innerHTML = '';
 
-        function displayWeather(weatherData) {
-            var weatherInfo = document.getElementById('weatherInfo');
-            weatherInfo.innerHTML = '';
+                var cityName = document.createElement('h2');
+                cityName.textContent = weatherData.name;
+                weatherInfo.appendChild(cityName);
 
-            var cityName = document.createElement('h2');
-            cityName.textContent = weatherData.name;
-            weatherInfo.appendChild(cityName);
+                var weatherDesc = document.createElement('p');
+                weatherDesc.textContent = 'Weather: ' + weatherData.weather[0].description;
+                weatherInfo.appendChild(weatherDesc);
 
-            var weatherDesc = document.createElement('p');
-            weatherDesc.textContent = 'Weather: ' + weatherData.weather[0].description;
-            weatherInfo.appendChild(weatherDesc);
+                var temp = document.createElement('p');
+                temp.textContent = 'Temperature: ' + weatherData.main.temp + '°C';
+                weatherInfo.appendChild(temp);
 
-            var temp = document.createElement('p');
-            temp.textContent = 'Temperature: ' + weatherData.main.temp + '°C';
-            weatherInfo.appendChild(temp);
-
-            var humidity = document.createElement('p');
-            humidity.textContent = 'Humidity: ' + weatherData.main.humidity + '%';
-            weatherInfo.appendChild(humidity);
-        }
-    </script>
-</body>
+                var humidity = document.createElement('p');
+                humidity.textContent = 'Humidity: ' + weatherData.main.humidity + '%';
+                weatherInfo.appendChild(humidity);
+            }
+        </script>
+    </body>
 </html>
