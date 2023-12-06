@@ -11,10 +11,16 @@ def index():
 @app.route('/weather', methods=['GET'])
 def get_weather():
     city = request.args.get('city')
-    if not city:
-        return jsonify({"error": "City parameter is missing"}), 400
+    latitude = request.args.get('lat')
+    longitude = request.args.get('lon')
+
+    if city:
+        weather_data = weather_api.get_weather(city)
+    elif latitude and longitude:
+        weather_data = weather_api.get_weather_by_coordinates(latitude, longitude)
+    else:
+        return jsonify({"error": "Invalid request"}), 400
     
-    weather_data = weather_api.get_weather(city)
     if not weather_data:
         return jsonify({"error": "Failed to fetch weather data"}), 500
     
@@ -23,6 +29,8 @@ def get_weather():
 @app.route('/static/<path:path>')
 def static_file(path):
     return app.send_static_file(path)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

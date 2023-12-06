@@ -4,7 +4,7 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #ef1b1b;
+    background-color: #ebef1b;
 }
 
 .container {
@@ -26,7 +26,7 @@ input[type="text"] {
 button {
     padding: 10px 20px;
     font-size: 16px;
-    background-color: #3498db;
+    background-color: #9b9797;
     color: white;
     border: none;
     cursor: pointer;
@@ -36,10 +36,27 @@ button:hover {
     background-color: #2980b9;
 }
 
-.weather-info {
-    background-color: white;
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
     padding: 20px;
+}
+
+.weather-sections {
+    display: flex;
+    justify-content: space-between;
+}
+
+.weather-section {
+    width: 48%; /* Adjust as needed */
+}
+
+.weather-info {
+    margin-top: 10px;
+    padding: 10px;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    display: inline-block;
 }
+
+

@@ -6,57 +6,123 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
-    <body>
-        <div class="container">
-            <h1>Weather App</h1>
-            <div class="input-section">
-                <input type="text" id="cityInput" placeholder="Enter city">
-                <button onclick="getWeather()">Get Weather</button>
+<body>
+    <div class="container">
+        <h1>Weather App</h1>
+        <div class="weather-sections">
+            <div class="weather-section" id="currentLocationSection">
+                <h2>Current Local Climate</h2>
+                <button onclick="getCurrentLocationWeather()">Get Current Location Weather</button>
+                <div id="currentLocationWeather" class="weather-info"></div>
             </div>
-            <div id="weatherInfo" class="weather-info"></div>
+            <div class="weather-section" id="manualLocationSection">
+                <h2>Where would you like to check the weather today?</h2>
+                <input type="text" id="cityInput" placeholder="Enter city">
+                <button onclick="getManualWeather()">Get Weather</button>
+                <div id="manualLocationWeather" class="weather-info"></div>
+            </div>
         </div>
-
-        <script>
-            function getWeather() {
-                var city = document.getElementById('cityInput').value;
-                if (city.trim() === '') {
-                    alert('Please enter a city');
-                    return;
+    </div>    
+    
+    <script>
+        function getCurrentLocationWeather() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+            } else {
+                alert('Geolocation is not supported by this browser.');
+            }
+        }
+    
+        function successCallback(position) {
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+            getWeatherByCoordinates(latitude, longitude, 'currentLocationWeather');
+        }
+    
+        function errorCallback(error) {
+            console.error('Error getting current position:', error);
+            alert('Error getting your location. Please enter a city manually.');
+        }
+    
+        function getWeatherByCoordinates(latitude, longitude, targetDivId) {
+            $.ajax({
+                url: '/weather?lat=' + latitude + '&lon=' + longitude,
+                method: 'GET',
+                success: function(response) {
+                    displayWeather(response, targetDivId);
+                },
+                error: function(xhr, status, error) {
+                    alert('Failed to fetch weather data');
+                    console.error(error);
                 }
-
-                $.ajax({
-                    url: '/weather?city=' + city,
-                    method: 'GET',
-                    success: function(response) {
-                        displayWeather(response);
-                    },
-                    error: function(xhr, status, error) {
-                        alert('Not a valid city , try again!');
-                        console.error(error);
-                    }
-                });
+            });
+        }
+    
+        function getManualWeather() {
+            var city = document.getElementById('cityInput').value;
+            if (city.trim() === '') {
+                alert('Please enter a city');
+                return;
             }
+    
+            getWeather(city, 'manualLocationWeather');
+        }
+    
+        function getWeather(city, targetDivId) {
+            $.ajax({
+                url: '/weather?city=' + city,
+                method: 'GET',
+                success: function(response) {
+                    displayWeather(response, targetDivId);
+                },
+                error: function(xhr, status, error) {
+                    alert('Failed to fetch weather data');
+                    console.error(error);
+                }
+            });
+        }
+    
+        function displayWeather(weatherData, targetDivId) {
+            var weatherInfo = document.getElementById(targetDivId);
+            weatherInfo.innerHTML = '';
+    
+            var cityName = document.createElement('h2');
+            cityName.textContent = weatherData.name;
+            weatherInfo.appendChild(cityName);
+    
+            var weatherDesc = document.createElement('p');
+            weatherDesc.textContent = 'Weather: ' + weatherData.weather[0].description;
+            weatherInfo.appendChild(weatherDesc);
+    
+            var temp = document.createElement('p');
+            temp.textContent = 'Temperature: ' + weatherData.main.temp + '°C';
+            weatherInfo.appendChild(temp);
+    
+            var humidity = document.createElement('p');
+            humidity.textContent = 'Humidity: ' + weatherData.main.humidity + '%';
+            weatherInfo.appendChild(humidity);
 
-            function displayWeather(weatherData) {
-                var weatherInfo = document.getElementById('weatherInfo');
-                weatherInfo.innerHTML = '';
+            var sunriseTime = new Date(weatherData.sys.sunrise * 1000);
+            var sunsetTime = new Date(weatherData.sys.sunset * 1000);
 
-                var cityName = document.createElement('h2');
-                cityName.textContent = weatherData.name;
-                weatherInfo.appendChild(cityName);
+            var sunrise = document.createElement('p');
+            sunrise.textContent = 'Sunrise: ' + formatTime(sunriseTime);
+            weatherInfo.appendChild(sunrise);
 
-                var weatherDesc = document.createElement('p');
-                weatherDesc.textContent = 'Weather: ' + weatherData.weather[0].description;
-                weatherInfo.appendChild(weatherDesc);
+            var sunset = document.createElement('p');
+            sunset.textContent = 'Sunset: ' + formatTime(sunsetTime);
+            weatherInfo.appendChild(sunset);
+        }
 
-                var temp = document.createElement('p');
-                temp.textContent = 'Temperature: ' + weatherData.main.temp + '°C';
-                weatherInfo.appendChild(temp);
-
-                var humidity = document.createElement('p');
-                humidity.textContent = 'Humidity: ' + weatherData.main.humidity + '%';
-                weatherInfo.appendChild(humidity);
-            }
-        </script>
+        function formatTime(time) {
+            var hours = time.getHours();
+            var minutes = time.getMinutes();
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // Handle midnight
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            return hours + ':' + minutes + ' ' + ampm;
+        }
+    </script>
     </body>
 </html>

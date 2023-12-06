@@ -18,3 +18,20 @@ class WeatherAPI:
             return response.json()
         else:
             return None
+        
+    def get_weather_by_coordinates(self, latitude, longitude):
+        api_key = os.getenv("API_KEY")
+        base_url = "https://api.openweathermap.org/data/2.5/weather"
+        params = {
+            "lat": latitude,
+            "lon": longitude,
+            "appid": api_key,
+            "units": "metric"
+        }
+        
+        response = requests.get(base_url, params=params)
+        
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return None
