@@ -1,11 +1,15 @@
 /* static/styles.css */
 
 body {
-    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #ebef1b;
+    font-family: Arial, sans-serif;
+
+    background-image: url('./bluesky.jpeg');
+    background-size: cover;
+    background-position: center;
 }
+
 
 .container {
     width: 80%;
