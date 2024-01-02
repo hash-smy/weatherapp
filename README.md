@@ -13,15 +13,15 @@ API key from OpenWeatgerMap
 #Installation
 Clone the repository:
 
-'''
+```
 git clone https://github.com/hash-smy/weatherapp.git
-'''
+```
 
 Install dependencies:
 
-'''
+```
 pip install -r requirements.txt
-'''
+```
 
 Set up your API key:
 
@@ -31,16 +31,16 @@ Create a .env file in the project root directory.
 
 Add your API key to the .env file:
 
-'''
+```
 API_KEY=your_api_key_here
-'''
+```
 
 Usage
 Run the Flask application:
 
-'''
+```
 python app.py
-'''
+```
 
 Access the application in your web browser at http://localhost:5000.
 
